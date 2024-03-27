@@ -20,6 +20,8 @@ jobs:
         shell: bash
         run: |
           sudo apt update && sudo apt upgrade
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
 
       - name: Build Arch Linux Package
         id: build_archlinuxpkg
