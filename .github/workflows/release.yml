@@ -12,14 +12,24 @@ run-name: Release Kernel for xanmod
 
 jobs:
   kernel:
-    runs-on: archlinux-latest
+    runs-on: ubuntu-latest
     name: Release Kernel
 
     steps:
       - name: Install dependencies
         shell: bash
         run: |
-          sudo panman -Syu
+          sudo apt update && apt upgrade
+
+      - name: Build Arch Linux Package
+        id: build_archlinuxpkg
+        uses: a520ass/build-archlinux-package@main
+        with:
+          docker-image: menci/aur-builder:archlinux
+          platform: ${{ matrix.pkgbuild_platform }}
+          pkgbuild-directory: ${{ github.workspace }}/archpkgsrc/${{ env.PKGBUILD_DIR }}
+          target-directory: /workdir
+
       - name: Build
         shell: bash
         run: |
