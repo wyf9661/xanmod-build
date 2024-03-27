@@ -1,0 +1,41 @@
+name: Release Kernel Patches for xanmod
+
+on:
+  #schedule:
+  #  - cron: "0 22 * * *"
+  #push:
+  #  branches:
+  #    - main
+  workflow_dispatch:
+
+run-name: Release Kernel for xanmod
+
+jobs:
+  kernel:
+    runs-on: archlinux-latest
+    name: Release Kernel
+
+    steps:
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo panman -Syu
+      - name: Build
+        shell: bash
+        run: |
+          git clone https://github.com/wyf9661/linux-xanmod.git
+          cd linux-xanmod
+          env _microarchitecture=27 use_numa=n use_tracers=n _compiler=clang _config=config_x86-64-v3 _compress_modules=y  makepkg -s
+
+      - name: Upload Kernel Patches to Release
+        uses: ncipollo/release-action@main
+        if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        with:
+          tag: Nightly
+          artifacts: ./linux-xanmod/*.xz
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            The kernel for linux xanmod.
