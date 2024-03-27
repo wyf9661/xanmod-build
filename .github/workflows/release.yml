@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          sudo apt update && apt upgrade
+          sudo apt update && sudo apt upgrade
 
       - name: Build Arch Linux Package
         id: build_archlinuxpkg
